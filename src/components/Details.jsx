@@ -1,42 +1,18 @@
-import React, { useState } from 'react'
-import Input from '../../shared/input'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import { validationUserData } from '../../validation/DataValidation';
-
-function Create() {
-    const Navigate=useNavigate();
-    const [error,setError]=useState({
-      name:'',
-      email:'',
-      password:'',
-    });
-    const [user,setUser]=useState({
-        name:'',
-        email:'',
-        password:'',
-    });
-  const changeData=(e)=>{
-        const{name,value}=e.target;
-        setUser({...user,[name]:value});
-    }
-  const sendData=async(e)=>{
-e.preventDefault();
-if(Object.keys(validationUserData(user)).length>0){
-  setError(validationUserData(user));
-}
-else{
-  const {data} =await axios.post("https://crud-users-gold.vercel.app/users/",user);
-if(data.message=='success'){
-    toast.success('user added successfly');
-    Navigate('/users/index');
-}
-}
-
-   }
-    return (
-        <div className="container-fluid">
+function Details() {
+  const [user,setUser]=useState({});
+  let {id}=useParams('id');
+  const getUser=async()=>{
+    const {data}=await axios.get(`https://crud-users-gold.vercel.app/users/${id}`);
+      setUser(data.user);
+  }
+  useEffect(()=>{
+    getUser();
+  },[]);
+  return (
+    <div className="container-fluid">
        <div className="row flex-nowrap">
          <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
            <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
@@ -117,20 +93,17 @@ if(data.message=='success'){
                </ul>
              </div>
            </div>
+         
+       
          </div>
          <div className="col py-3">
-       <form onSubmit={sendData}>
-       <Input error={error} id={'name'} title={'Name'} type={'text'} name={'name'} changeData={changeData}/>
-       <Input error={error} id={'email'} title={'Email'} type={'email'} name={'email'} changeData={changeData}/>
-       <Input error={error} id={'password'} title={'Password'} type={'password'} name={'password'} changeData={changeData}/>
-       <button type="submit" className="btn btn-primary">Submit</button>
-</form>
-
+           details for {user.name};
+           </div>
          </div>
+        
        </div>
-     </div>
-     
-       )
+    
+  )
 }
 
-export default Create
+export default Details

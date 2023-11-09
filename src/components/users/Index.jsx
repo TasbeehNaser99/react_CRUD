@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Index() {
     const[user,setUser]=useState([]);
@@ -10,6 +12,15 @@ function Index() {
     useEffect(()=>{
         getUser();
     },[]);
+    useEffect(()=>{
+      getUser();
+  },[user]);
+     const deleteUser=async(id)=>{
+      const {data}=await axios.delete(`https://crud-users-gold.vercel.app/users/${id}`)
+      if(data.message='success'){
+        toast.success="user deleted successfuly";
+      }
+     }
     return (
         <div className="container-fluid">
        <div className="row flex-nowrap">
@@ -101,6 +112,7 @@ function Index() {
                     <th scope='col'>name</th>
                     <th scope='col'>email</th>
                     <th scope='col'>password</th>
+                    <th scope='col' className='me-0 pe-0'>action</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,6 +124,8 @@ function Index() {
                         <td>{e.name}</td>
                         <td>{e.email}</td>
                         <td>{e.password}</td>
+                        <td className='me-0 pe-0' onClick={()=>deleteUser(e._id)}><div className='w-25 me-0 pe-0'><img src='delete.png' className='w-25 me-0 pe-0' alt='delete'/></div></td>
+                        <td ><Link to={`/users/${e._id}`}><div className='w-25'><img src='file.png' className='w-25' alt='details'/></div></Link></td>
                         </tr>
                        </React.Fragment>
                     ))              
