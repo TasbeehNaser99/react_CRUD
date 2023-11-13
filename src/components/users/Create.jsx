@@ -4,9 +4,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { validationUserData } from '../../validation/DataValidation';
+import Loader from '../../shared/Loader';
 
 function Create() {
     const Navigate=useNavigate();
+    let [loader,setLoader]=useState(false);
     const [error,setError]=useState({
       name:'',
       email:'',
@@ -17,24 +19,38 @@ function Create() {
         email:'',
         password:'',
     });
-  const changeData=(e)=>{
+    let [backError,setBackError]=useState('');
+         const changeData=(e)=>{
         const{name,value}=e.target;
         setUser({...user,[name]:value});
     }
   const sendData=async(e)=>{
 e.preventDefault();
+setLoader(true);
 if(Object.keys(validationUserData(user)).length>0){
   setError(validationUserData(user));
 }
-else{
-  const {data} =await axios.post("https://crud-users-gold.vercel.app/users/",user);
-if(data.message=='success'){
-    toast.success('user added successfly');
-    Navigate('/users/index');
+else{ 
+  try{ 
+    const {data} =await axios.post("https://crud-users-gold.vercel.app/users/",user);
+  if(data.message=='success'){
+      toast.success('user added successfly');
+      Navigate('/users/index');
+      setLoader(false);
+  }
+}
+  catch(error){
+    setBackError(error.response.data.message);
+    setError([]);
+    setLoader(false);
+  }
 }
 }
-
-   }
+if(loader){
+  return(
+    <Loader/>
+  )
+}
     return (
         <div className="container-fluid">
        <div className="row flex-nowrap">
@@ -120,12 +136,12 @@ if(data.message=='success'){
          </div>
          <div className="col py-3">
        <form onSubmit={sendData}>
+        {backError&&<p className='text-danger'>{backError}</p>}
        <Input error={error} id={'name'} title={'Name'} type={'text'} name={'name'} changeData={changeData}/>
        <Input error={error} id={'email'} title={'Email'} type={'email'} name={'email'} changeData={changeData}/>
        <Input error={error} id={'password'} title={'Password'} type={'password'} name={'password'} changeData={changeData}/>
        <button type="submit" className="btn btn-primary">Submit</button>
 </form>
-
          </div>
        </div>
      </div>
