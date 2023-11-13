@@ -243,6 +243,7 @@ function Edit() {
               name={"name"}
               value={user.name}
               changeData={changeData}
+              ifdisabled={true}
             />
             <Input
               error={error}
@@ -252,6 +253,7 @@ function Edit() {
               name={"email"}
               value={user.email}
               changeData={changeData}
+              ifdisabled={true}
             />
             <Input
               error={error}
